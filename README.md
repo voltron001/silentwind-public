@@ -2,324 +2,552 @@
 
 ### Encrypted. Private. Peer-Identified. 
 
-Last Updated: September 14, 2026
+Last Updated: September 22, 2026
 
-SilentWind is a privacy-focused encrypted messaging platform designed for organizations and professionals where confidentiality matters.
+# SilentWind
 
-It is being engineered around a simple principle:
+### Encrypted. Private. Peer-Identified.
 
-> **Private communication should remain private by design.**
+> **In a world where data is currency, silence is power.**
 
-SilentWind combines client-side encryption, peer-based identity, authenticated coordination services, and a hybrid communication architecture designed to support direct peer communication when possible while maintaining reliable encrypted delivery when direct connectivity is unavailable.
+SilentWind is a privacy-first encrypted messaging platform designed for organizations and professionals where confidentiality, control, and digital trust matter.
 
----
+SilentWind uses a **peer-identified identity model**, **client-side end-to-end encryption**, and a **hybrid decentralized network structure** that allows peers to communicate directly when supported while maintaining an authenticated relay for coordination and delivery fallback.
 
-## 🔐 Security by Design
-
-SilentWind is designed around a client-first security model.
-
-Message content is encrypted on the client before transmission. The backend is designed to operate primarily as a coordination and delivery layer rather than as a plaintext messaging processor.
-
-This architecture is intended to minimize the amount of sensitive information exposed to infrastructure while keeping encrypted communication reliable across different network environments.
-
-### Security principles
-
-* Client-side message encryption
-* No requirement for email-based accounts
-* No requirement for phone numbers
-* Peer-oriented identity model
-* Private key material remains client-side
-* Authenticated backend communication
-* Role-based access control
-* Encrypted relay delivery
-* Direct peer communication when supported
-* Secure local credential handling
-* Transport security through HTTPS/TLS
-* Security controls enforced server-side
-
-SilentWind is being developed with a defense-in-depth philosophy rather than relying on a single security mechanism.
+The project is under active development.
 
 ---
 
-## 🌐 Hybrid Communication Architecture
+## What SilentWind Is
 
-SilentWind uses a hybrid communication model.
+SilentWind is built around a simple principle:
 
-When conditions permit, compatible clients can establish a direct peer communication channel. The backend assists with authenticated coordination and connection establishment.
+**The infrastructure that delivers a message should not need to know what that message says.**
 
-When direct communication is unavailable, communication can fall back to an encrypted relay mechanism.
+Instead of relying on traditional email- or phone-number-based identities, SilentWind uses cryptographically generated peer identities and human-readable display identifiers.
 
-Conceptually:
+Messages are encrypted on the client before transmission.
+
+The backend operates primarily as a coordination, authentication, access-control, and fallback delivery layer. It does not require access to plaintext message content or client private encryption keys.
+
+SilentWind is being designed with organizations in mind, including privacy-sensitive professional services and other environments where confidential communications are essential.
+
+---
+
+## Architecture at a Glance
+
+SilentWind follows a **hybrid decentralized architecture**:
 
 ```text
-             ┌─────────────────────┐
-             │     SilentWind      │
-             │       Client        │
-             └──────────┬──────────┘
-                        │
-                Encrypted Payload
-                        │
-             ┌──────────▼──────────┐
-             │ Communication Layer │
-             └───────┬───────┬─────┘
-                     │       │
-              Direct │       │ Relay
-                     │       │
-              ┌──────▼──┐ ┌──▼──────────┐
-              │   Peer  │ │ Coordination │
-              │ Client  │ │ / Relay      │
-              └─────────┘ └──────┬───────┘
-                                  │
-                           Encrypted Delivery
-                                  │
-                           ┌──────▼──────┐
-                           │   Recipient │
-                           │    Client   │
-                           └─────────────┘
+                 ┌─────────────────────┐
+                 │      Peer A          │
+                 │                     │
+                 │ Identity + Keys      │
+                 │ Local Encryption     │
+                 └──────────┬──────────┘
+                            │
+                 Direct encrypted path
+                            │
+                            ▼
+                 ┌─────────────────────┐
+                 │      Peer B          │
+                 │                     │
+                 │ Identity + Keys      │
+                 │ Local Decryption     │
+                 └─────────────────────┘
+
+                            │
+                     When direct delivery
+                     is unavailable
+                            │
+                            ▼
+                 ┌─────────────────────┐
+                 │   SilentWind Relay   │
+                 │                     │
+                 │ Authentication       │
+                 │ Contact Discovery    │
+                 │ Access Control       │
+                 │ Signaling            │
+                 │ Encrypted Queue      │
+                 └─────────────────────┘
 ```
 
-The relay infrastructure is not intended to function as a centralized plaintext messaging system.
+The relay is **not intended to be a centralized plaintext messaging processor**.
 
-The goal is to separate **communication coordination** from **message confidentiality**.
+When direct peer communication is available, encrypted application payloads can travel directly between supported clients.
 
----
+When direct communication is unavailable, the encrypted payload can be delivered through the authenticated relay as an opaque encrypted object.
 
-## 🆔 Peer-Based Identity
-
-SilentWind uses a peer-oriented identity model rather than traditional account identifiers.
-
-The system does not require:
-
-* Email addresses
-* Telephone numbers
-* Traditional passwords
-* A centralized consumer-style user directory
-
-Clients generate cryptographic identity material locally during onboarding.
-
-Public identity information can be registered with the coordination layer for authenticated discovery, while sensitive private key material remains on the client.
-
-A human-readable contact identifier is used for contact discovery rather than exposing internal peer identifiers as the primary user-facing identity.
+This provides a practical balance between decentralized communication and the reliability required by real-world networks.
 
 ---
 
-## 🔑 Cryptographic Foundation
+# Core Security Model
 
-SilentWind currently uses modern cryptographic primitives for key agreement, key derivation, hashing, and authenticated encryption.
+## Client-Side Encryption
 
-The implementation includes cryptographic components from the following families:
+Messages are encrypted on the originating device before transmission.
+
+The current implementation uses:
 
 * **X25519** for key agreement
-* **AES-256-GCM** for authenticated encryption
-* **HKDF-SHA256** for key derivation
-* **SHA-256**
-* **PBKDF2-SHA256** for local credential protection
-* Cryptographically secure random number generation
+* **AES-256-GCM** for authenticated message encryption
+* **HKDF-SHA256** for conversation-key derivation
+* Cryptographically secure random values for key and message encryption material
 
-Private cryptographic material is intended to remain within the client security boundary.
+The relay receives encrypted payloads rather than plaintext messages.
 
-> **Important:** The public repository intentionally does not document the complete cryptographic protocol, key lifecycle, wire formats, or internal security implementation.
+The architecture is designed so that client private keys remain on the client.
 
-Those details belong in the project's internal technical documentation.
+### Important distinction
 
----
+SilentWind's current architecture should not be interpreted as providing complete metadata privacy.
 
-## 🛡️ Access Control
+The relay may observe operational information required to coordinate the network, including information such as:
 
-SilentWind incorporates server-enforced role-based access control.
+* Peer identifiers
+* Display identifiers
+* Roles
+* Routing information
+* Timestamps
+* Queue activity
+* Request patterns
 
-The current architecture supports role separation for different classes of peers, allowing authorized administrators to manage access while preventing unauthorized privilege escalation.
+Therefore, SilentWind uses **"zero knowledge"** in the limited architectural sense that the relay does not have access to plaintext message content or client private key material.
 
-Security decisions are enforced at the API layer rather than relying solely on client-side interface restrictions.
-
-This provides an additional layer of protection if a client attempts an operation that its interface should not expose.
-
----
-
-## 💻 Technology Stack
-
-SilentWind is built using a modern TypeScript-based application stack.
-
-### Client
-
-* React Native
-* Expo
-* TypeScript
-* Expo Router
-* Cross-platform mobile/web architecture
-
-### Backend
-
-* Node.js
-* Express
-* PostgreSQL
-* Drizzle ORM
-
-### API
-
-* OpenAPI
-* Zod
-* Generated TypeScript API clients
-
-### Cryptography
-
-* Noble cryptographic libraries
-* X25519
-* AES-256-GCM
-* HKDF
-* SHA-256
-* PBKDF2
-
-### Communication
-
-* WebRTC-compatible direct transport
-* Authenticated signaling
-* Encrypted relay fallback
+It does **not** mean that the service has zero access to all metadata.
 
 ---
 
-## 📱 Supported Platforms
+# Peer-Identified Identity
 
-SilentWind is being developed with a cross-platform architecture targeting:
+SilentWind does not require traditional account identifiers such as:
 
-* iOS
-* Android
-* Web
+* Email addresses
+* Phone numbers
+* Password-based server authentication
 
-The communication layer is designed around transport abstraction so that platform-specific transport capabilities can evolve without requiring the application-level encryption model to be redesigned.
+Instead, each client establishes a cryptographic identity during onboarding.
+
+A SilentWind identity consists conceptually of:
+
+| Component         | Purpose                                  |
+| ----------------- | ---------------------------------------- |
+| Peer ID           | Server-side identity identifier          |
+| Display ID        | Human-readable contact identifier        |
+| Identity key pair | Cryptographic peer identity              |
+| Private key       | Remains on the client                    |
+| Public key        | Used for authenticated contact discovery |
+| Access credential | Authenticates API requests               |
+| Local PIN         | Protects local application access        |
+
+Peer IDs and human-readable Display IDs serve different purposes.
+
+A Display ID is the identifier users exchange when establishing contact.
 
 ---
 
-## 🏗️ Repository Structure
+# First-Contact Verification
 
-The project is organized as a workspace-based monorepo.
+SilentWind does not treat a successful contact lookup as automatic proof of identity.
 
-At a high level, the repository contains:
+When a new contact is added, the application presents a cryptographic safety fingerprint associated with the contact's public identity key.
+
+Users are expected to compare this fingerprint through a trusted out-of-band channel before beginning confidential communication.
+
+This provides a human-verifiable trust step rather than relying exclusively on the relay as a trusted identity authority.
+
+SilentWind also validates incoming key-exchange information against previously registered contact information before establishing a conversation key.
+
+Unknown or inconsistent key material is rejected.
+
+---
+
+# Current Message Security
+
+The current implementation establishes a conversation encryption key using an X25519-derived shared secret.
+
+Messages are then encrypted locally using authenticated encryption.
+
+Each encrypted message contains versioned information necessary for secure processing and delivery tracking.
+
+The relay stores and forwards the resulting opaque encrypted payload.
+
+### Replay and duplicate protection
+
+The current implementation includes persistent message-envelope identifiers designed to prevent previously delivered encrypted payloads from being displayed repeatedly if they are reintroduced into the delivery queue.
+
+Legacy payloads remain supported during migration where necessary.
+
+---
+
+# Hybrid Peer-to-Peer Communication
+
+SilentWind supports two primary delivery paths.
+
+### Direct peer communication
+
+Supported browser clients can establish a direct peer data channel using authenticated signaling.
+
+Once established, the already-encrypted application payload can travel directly between peers.
+
+### Encrypted relay fallback
+
+When direct communication is unavailable, including situations involving:
+
+* NAT or firewall restrictions
+* Unsupported client environments
+* Offline recipients
+* Failed direct-channel negotiation
+
+SilentWind can use the authenticated relay as a fallback delivery mechanism.
+
+The application payload remains encrypted before entering the relay.
+
+### Transport security vs. application encryption
+
+Transport-layer encryption is not considered a replacement for application-level end-to-end encryption.
+
+SilentWind maintains encryption at the application layer regardless of whether the payload travels directly between peers or through the relay.
+
+---
+
+# Access Control
+
+SilentWind includes server-enforced role-based access control.
+
+The current role model includes:
+
+* **Owner**
+* **Administrator**
+* **Member**
+* **Suspended**
+
+Permissions are enforced by the backend rather than relying exclusively on client-side interface restrictions.
+
+For example, a suspended peer is prevented from performing protected messaging, polling, and contact-discovery operations.
+
+Administrative controls allow authorized users to manage network membership and applicable roles while protecting the owner account from unauthorized modification.
+
+The current RBAC model is **network-wide rather than multi-tenant**.
+
+---
+
+# Authentication
+
+Authenticated API operations use per-peer credentials.
+
+Security controls currently include:
+
+* Constant-time credential comparisons
+* Hashed credential storage for newly issued credentials
+* Credential rotation
+* Protection against unauthorized peer re-registration
+* Preservation of the registered public identity key during re-registration
+* Server-side authorization checks
+
+The design intentionally separates:
+
+**local application authentication**
+
+from
+
+**server-side API authentication**
+
+A user's local PIN is not used as the server's authentication credential.
+
+---
+
+# Local Security
+
+SilentWind treats client-side key material as sensitive.
+
+Private identity keys and conversation encryption material are designed to remain on the client rather than being transmitted to the relay.
+
+The application also includes local protections such as:
+
+* PIN-protected application access
+* Failed-attempt throttling
+* Background/inactive application locking
+* Secure platform storage where supported
+* Migration of legacy credential-verification formats
+* Constant-time security comparisons
+
+Web and native environments use platform-appropriate local storage mechanisms.
+
+---
+
+# Current Security Status
+
+SilentWind is intentionally transparent about what is implemented today versus what remains future work.
+
+| Security Property                            | Current Status                         |
+| -------------------------------------------- | -------------------------------------- |
+| Client-side message encryption               | Implemented                            |
+| AES-256-GCM message protection               | Implemented                            |
+| X25519 key agreement                         | Implemented                            |
+| Relay plaintext message access               | Not available                          |
+| Relay private-key access                     | Not available                          |
+| First-contact safety verification            | Implemented                            |
+| Contact key-injection protection             | Implemented                            |
+| Replay / duplicate protection                | Implemented for current payload format |
+| Credential hashing                           | Implemented                            |
+| Credential rotation                          | Implemented                            |
+| Constant-time authentication comparisons     | Implemented                            |
+| PIN brute-force throttling                   | Implemented                            |
+| Server-enforced RBAC                         | Implemented                            |
+| Suspended-peer enforcement                   | Implemented                            |
+| Browser direct transport                     | Implemented                            |
+| Relay fallback transport                     | Implemented                            |
+| Forward secrecy                              | **Not currently implemented**          |
+| Break-in recovery                            | **Not currently implemented**          |
+| Double Ratchet                               | **Future cryptographic work**          |
+| X3DH-style asynchronous pre-key architecture | **Future cryptographic work**          |
+| Per-message key deletion                     | **Future cryptographic work**          |
+
+### A note on forward secrecy
+
+SilentWind does **not** currently claim Signal-level forward secrecy or break-in recovery.
+
+The current implementation uses a long-lived conversation key derived from the participating identities.
+
+Future cryptographic development will require an explicit re-keying architecture and associated interoperability, storage, migration, and recovery testing before those properties are claimed.
+
+This distinction is intentional.
+
+**SilentWind documents implemented security properties rather than marketing future capabilities as if they already exist.**
+
+---
+
+# API Architecture
+
+The backend provides authenticated services for:
+
+* Peer registration
+* Peer authentication
+* Contact discovery
+* Encrypted message relay
+* Delivery queuing
+* Peer polling
+* WebRTC signaling
+* Role and access management
+* Health monitoring
+
+The API accepts encrypted application payloads as opaque data.
+
+The backend is therefore responsible for **delivery and coordination**, rather than plaintext message processing.
+
+A simplified request flow looks like:
+
+```text
+Client
+  │
+  │ Authenticate
+  ▼
+SilentWind API
+  │
+  ├── Identity / Registration
+  ├── Contact Discovery
+  ├── Access Control
+  ├── Signaling
+  └── Encrypted Delivery Queue
+             │
+             ▼
+          Recipient
+```
+
+---
+
+# Developer Architecture
+
+The project is structured as a workspace containing separate application and shared-library responsibilities.
+
+At a high level:
 
 ```text
 SilentWind
+│
 ├── Client Application
-├── API / Coordination Service
-├── Database Layer
-├── API Specification
-├── Generated API Types
-└── Shared Application Components
+│   ├── Identity
+│   ├── Contacts
+│   ├── Conversations
+│   ├── Encryption
+│   ├── Access Control
+│   └── Direct Transport
+│
+├── API / Relay
+│   ├── Authentication
+│   ├── Registration
+│   ├── Contact Discovery
+│   ├── Signaling
+│   ├── Message Queue
+│   └── RBAC
+│
+└── Shared Services
+    ├── Database Layer
+    ├── API Contracts
+    ├── Validation
+    └── Shared Types
 ```
 
-Internal implementation details are intentionally omitted from this public overview.
+The implementation uses a strongly typed application architecture and shared API contracts to reduce inconsistencies between client and server components.
 
 ---
 
-## 🔒 Privacy Model
+# Development Principles
 
-SilentWind's privacy model focuses on protecting the confidentiality of message content and client-held private key material.
+SilentWind development follows several principles:
 
-The infrastructure may still process operational information required to provide the service, such as communication routing and system-management data.
+### Privacy by architecture
 
-Accordingly, SilentWind does **not** claim that its infrastructure has zero visibility into all metadata.
+Security should not depend exclusively on policy or user trust.
 
-The security objective is more specific:
+The system should minimize what infrastructure components can access in the first place.
 
-> **The communication infrastructure should not need access to plaintext message content or client private keys to provide encrypted messaging services.**
+### Explicit security boundaries
 
-This distinction is important.
+Identity, encryption, authentication, authorization, transport, and storage are treated as distinct security boundaries.
 
-Privacy is not achieved by marketing language. It must be reflected in architecture, implementation, operational controls, and future security validation.
+### Fail closed
+
+Invalid credentials, unauthorized roles, inconsistent key material, and failed authentication checks should result in rejection rather than silent fallback.
+
+### Security transparency
+
+SilentWind aims to publish enough technical information for developers and security professionals to understand the security model without publishing sensitive implementation details that could compromise the project's security or intellectual property.
+
+**Transparency does not mean publishing everything.**
+
+### No security-by-marketing
+
+A feature is described as implemented only after it exists in the current codebase and has been verified.
+
+Future cryptographic capabilities are identified as future work rather than presented as current guarantees.
 
 ---
 
-## 🚧 Development Status
+# Current Development Status
 
-SilentWind is an actively developed project.
+SilentWind is an active development project.
 
-Current development includes:
+The current implementation includes:
 
-* Encrypted client-side messaging
-* Peer-oriented identity
-* Authenticated communication
+* Peer-based identity
+* Client-side encrypted messaging
+* X25519-based key agreement
+* AES-256-GCM message encryption
+* Contact discovery
+* First-contact safety verification
+* Key-exchange integrity checks
 * Encrypted relay delivery
-* Direct browser communication capabilities
+* Browser direct peer transport
+* Relay signaling
 * Role-based access control
-* Secure local credential handling
-* Cross-platform client architecture
-* API-driven communication infrastructure
+* Credential rotation
+* Local PIN protection
+* Replay and duplicate-delivery protections
+* Shared API contracts
+* Cross-platform application architecture
 
-Additional security and communication capabilities remain under development.
-
-### Security roadmap
-
-Future development is expected to expand the cryptographic and transport security model, improve key lifecycle management, strengthen production hardening, and increase independent validation of security assumptions.
-
-Security features will only be considered production guarantees once they are implemented, tested, and documented.
+The cryptographic architecture is continuing to evolve, with future work focused on stronger conversation-key lifecycle management and additional protections associated with modern asynchronous messaging systems.
 
 ---
 
-## ⚠️ Security Disclosure
+# Production Considerations
 
-SilentWind is a security-focused project under active development.
+A production deployment requires appropriate operational security controls, including:
 
-The public repository is intended to communicate the project's architecture and engineering direction without publishing sensitive implementation details.
+* HTTPS/TLS
+* Protected database infrastructure
+* Secure server configuration
+* Secret management
+* Restricted administrative access
+* Monitoring and logging appropriate to the privacy model
+* Secure backup and recovery procedures
+* Dependency and vulnerability management
+* Security testing before production release
 
-It intentionally does **not** contain:
+Operational metadata remains an important consideration.
 
-* Complete cryptographic protocol specifications
-* Internal key-management procedures
-* Detailed wire formats
-* Production infrastructure configuration
-* Sensitive deployment information
-* Internal security procedures
-* Private development documentation
-* Proprietary implementation details
-
-Do not interpret this README as a complete security specification or independent security audit.
-
----
-
-## 🧪 Engineering Philosophy
-
-SilentWind is being developed around several engineering principles:
-
-**Security over convenience.**
-
-Security decisions should be architectural rather than cosmetic.
-
-**Minimal trust.**
-
-Components should receive only the information necessary to perform their function.
-
-**Client-side protection.**
-
-Sensitive cryptographic material should remain within the appropriate client security boundary.
-
-**Defense in depth.**
-
-No single security mechanism should be treated as sufficient protection.
-
-**Explicit security guarantees.**
-
-Implemented capabilities should be distinguished from future goals.
-
-**Transparency without unnecessary exposure.**
-
-Security architecture should be explainable without publishing information that unnecessarily increases the attack surface.
+SilentWind's architecture reduces plaintext exposure but does not eliminate the existence of network metadata.
 
 ---
 
-## 📌 Project Status
+# Security Testing & Release Verification
 
-SilentWind is currently under active development and should be considered a **development-stage security project**.
+Before production releases, the project is tested against security and functional requirements including:
 
-The public repository provides a high-level technical overview.
+* Initial owner assignment
+* Role-management restrictions
+* Suspended-peer enforcement
+* Credential rotation
+* Unauthorized re-registration
+* Duplicate queue delivery
+* Direct transport negotiation
+* Relay fallback
+* Key-exchange validation
+* Safety-fingerprint verification
+* Replay protection
+* Local application locking
+* API and client type validation
+* Deployment transport security
 
-Detailed implementation documentation is maintained separately.
+Security-sensitive architectural changes should be accompanied by corresponding updates to:
+
+1. The technical specification
+2. API contracts
+3. Storage requirements
+4. Interoperability tests
+5. Security verification procedures
 
 ---
 
-## About SilentWind
+# Intellectual Property & Responsible Disclosure
 
-SilentWind is being developed under **CyberFX Secure** with a focus on privacy, secure communication, and practical cybersecurity engineering.
+This repository intentionally provides a high-level view of SilentWind's architecture and current security model.
 
-> **In a world where data is currency, silence is power.**
+Certain implementation details are intentionally excluded from the public repository, including proprietary infrastructure decisions, internal implementation paths, detailed database structures, operational configurations, and other security-sensitive or commercially confidential information.
+
+This approach is intended to provide meaningful technical transparency while protecting the project's intellectual property and reducing unnecessary exposure of sensitive implementation details.
+
+If you discover a potential security vulnerability, please report it responsibly rather than publicly disclosing exploit details.
+
+A formal security-reporting process will be provided as the project approaches broader production availability.
+
+---
+
+# Project Philosophy
+
+SilentWind is being built around a simple idea:
+
+**Privacy should be an architectural property, not merely a promise.**
+
+People and organizations should be able to communicate confidentially without assuming that every intermediary needs access to their conversations.
+
+The goal is not to create another messaging application.
+
+The goal is to build communication infrastructure where **trust is deliberately engineered into the system.**
+
+---
+
+## Status
+
+**Current implementation:** Active development
+**Architecture:** Hybrid decentralized / peer-first
+**Messaging:** Client-side encrypted
+**Identity:** Peer-identified
+**Access control:** Role-based
+**Primary platforms:** iOS, Android, Web preview
+**Security posture:** Actively evolving
+
+---
+
+## SilentWind
+
+**Encrypted. Private. Peer-Identified.**
+
+*In a world where data is currency, silence is power.*
+
 
 ---
 
