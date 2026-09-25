@@ -1,0 +1,153 @@
+# SilentWind — Security & Delivery Invariants (Public Redacted v0.2)
+
+**Last updated:** 2026-09-25
+**Audience:** public security reviewers and developers
+**Status:** Public draft (redacted)
+
+---
+
+## 0. Purpose
+This document defines security and delivery invariants that SilentWind must maintain across releases. It intentionally avoids sensitive implementation details while still stating verifiable properties about confidentiality, trust establishment, and correct encrypted delivery behavior.
+
+---
+
+## 1. Security Boundaries (What's guaranteed)
+
+### 1.1 Client vs relay responsibilities
+- **Client (required):**
+  - Performs end to end encryption and decryption.
+  - Keeps sensitive private key material on device.
+  - Enforces local access protection (e.g., local app unlock).
+- **Relay/API (required):**
+  - Does **not** access message plaintext.
+  - Treats message payloads as opaque encrypted objects.
+  - Coordinates delivery and access control without decrypting message contents.
+
+### 1.2 Explicit scope vs non scope
+**Invariants covered in this document (implemented/tested):**
+- End to end encryption at the application layer.
+- Message authentication/tamper detection (authenticated encryption behavior).
+- Strict, versioned encrypted message envelopes with fail closed validation.
+- Safety verification step for first contact trust establishment.
+- Integrity checks that reject inconsistent identity/trust material during conversation setup.
+- Replay/duplicate protection for the current message envelope format.
+- Encrypted delivery works both:
+  - via direct peer communication when available
+  - via relay fallback when direct communication is unavailable
+
+**Not claimed as implemented here (explicitly future):**
+- Advanced forward secrecy / post compromise recovery guarantees.
+- Metadata minimization and traffic correlation resistance (see Section 3).
+- Any cryptographic lifecycle properties beyond what is implemented and verified in the current codebase.
+
+> Release rule: Never imply unimplemented cryptographic properties as current guarantees.
+
+---
+
+## 2. Relay Observability Invariants (What the relay must not do)
+
+### 2.1 No plaintext access
+**Invariant R1:** The relay/API must never receive, log, store, or derive plaintext message content or conversation secrets.
+
+### 2.2 Opaque ciphertext handling
+**Invariant R2:** The relay stores and forwards encrypted payloads without decrypting them. It performs only the envelope validation needed for correct delivery/duplication handling.
+
+### 2.3 Fail closed error handling
+**Invariant R3:** Invalid payloads and unauthorized operations must be rejected without creating distinguishable behaviors that could aid probing.
+
+---
+
+## 3. Metadata Protection Invariants (Not Yet Implemented)
+
+### 3.1 Current status
+SilentWind's existing invariants (Sections 1 and 2) protect message content. They do not currently protect metadata, meaning information about the communication itself rather than its contents. This includes sender and recipient identifiers, timestamps, message frequency, approximate payload size, and IP addresses visible to the relay during delivery.
+
+Today, the relay has operational visibility into some of this metadata as a normal part of routing and delivering encrypted payloads. This is a known and current limitation, not a hidden one.
+
+### 3.2 What is not claimed today
+**Not claimed as implemented (explicitly future):**
+- Sender or recipient identity concealment from the relay.
+- Traffic analysis resistance (padding, batching, or timing obfuscation to prevent inferring who is talking to whom, how often, or when).
+- IP address unlinkability from message delivery.
+- Message size normalization to prevent content type or length inference.
+
+### 3.3 Planned invariants (future)
+These are documented now so reviewers and customers understand the roadmap, not the current state:
+
+- **Invariant M1 (planned):** Reduce relay level retention of sender and recipient identifiers to the minimum required for delivery and no longer.
+- **Invariant M2 (planned):** Introduce message padding or size bucketing to reduce payload size as a side channel.
+- **Invariant M3 (planned):** Evaluate timing and batching strategies to reduce correlation between send and deliver events.
+- **Invariant M4 (planned):** Document and minimize what delivery metadata is retained in logs, and for how long.
+
+> Release rule: Do not imply metadata protection or traffic analysis resistance as a current guarantee until an invariant in this section is implemented and tested. Update this document the moment any M series invariant ships.
+
+---
+
+## 4. Identity & Trust Invariants (How trust is established)
+
+### 4.1 Peer identified model
+**Invariant I1:** Confidential communications do not rely on traditional server side account identifiers (e.g., email/phone/password) as the basis for end to end trust.
+
+### 4.2 Discovery is not trust
+**Invariant I2:** Successful contact discovery/lookup does not automatically grant trust for confidential communication. A user verification step is required for new contacts.
+
+### 4.3 Integrity during conversation setup
+**Invariant I3:** If inconsistent identity/trust material is presented during conversation establishment, SilentWind rejects the attempt (fail closed).
+
+### 4.4 Key injection / trust change protection
+**Invariant I4:** Unauthorized attempts to change registered trust material are prevented, preserving existing trust bindings.
+
+---
+
+## 5. Cryptographic Correctness Invariants (Abstract)
+
+### 5.1 Modern end to end encryption
+**Invariant C1:** Conversation key material is derived using secure key agreement and key derivation mechanisms appropriate for modern end to end messaging.
+
+### 5.2 Authenticated encryption behavior
+**Invariant C2:** Messages use authenticated encryption behavior such that tampering causes decryption to fail (i.e., no successful plaintext recovery under modified inputs).
+
+### 5.3 Versioned strict envelopes
+**Invariant C3:** Encrypted message envelopes are versioned and strictly validated. Unsupported/invalid versions are rejected fail closed.
+
+> Implementation details (primitive names/parameters) are intentionally omitted from this public document.
+
+---
+
+## 6. Delivery Invariants (Direct + Relay Fallback)
+
+### 6.1 Confidentiality preserved across paths
+**Invariant D1:** Encrypted payloads maintain the same confidentiality properties whether delivered directly or via relay fallback.
+
+### 6.2 Replay / duplicate protection
+**Invariant D2:** Previously delivered encrypted payloads must not be repeatedly displayed to the recipient.
+
+**Invariant D3:** Duplicate protection remains correct across client restarts and relay resend/retry behavior.
+
+### 6.3 Safe failure mode fallback
+**Invariant D4:** If direct delivery is unavailable or fails, relay fallback preserves ciphertext opacity and does not weaken trust checks or introduce fail open behavior.
+
+### 6.4 Invalid data never becomes "a message"
+**Invariant D5:** Invalid or corrupted envelopes must be rejected before any decrypted/displayed message content can occur.
+
+---
+
+## 7. Access Control Invariants
+
+### 7.1 Server enforced authorization
+**Invariant A1:** Role based access control for protected operations is enforced server side.
+
+### 7.2 Suspended entities are denied
+**Invariant A2:** Suspended peers are prevented from performing protected operations.
+
+### 7.3 Authentication is defensive
+**Invariant A3:** Authentication and authorization checks must reject unauthorized requests; timing and comparison hardening is applied where applicable.
+
+---
+
+## 8. Assurance Statement
+Each release is validated against a security regression suite covering cryptographic correctness, envelope validation, trust establishment, delivery integrity across both direct and relay fallback paths, replay protection, access control enforcement, and confirmation that relay logs and telemetry contain no plaintext or secrets. Detailed test architecture is maintained internally and is not published here.
+
+---
+
+A separate internal engineering document, not intended for public distribution, covers primitive names, envelope field structures, test case specifics, release gating criteria, and change management process.
