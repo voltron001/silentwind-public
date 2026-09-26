@@ -2,7 +2,9 @@
 
 ### Encrypted. Private. Peer-Identified. 
 
-Last Updated: September 22, 2026
+Last Updated: September 26, 2026
+
+Copyright (c) 2026 Alex Arda Akyuz / CyberFX Secure. All rights reserved. SilentWind and its architecture, source code, and documentation are proprietary. See LICENSE for details.
 
 # SilentWind
 
@@ -527,6 +529,20 @@ People and organizations should be able to communicate confidentially without as
 The goal is not to create another messaging application.
 
 The goal is to build communication infrastructure where **trust is deliberately engineered into the system.**
+
+**Transparency and Licensing Statement**
+
+A Note on Transparency and Ownership
+
+This repository is public because I believe security products earn trust through openness, not through vague marketing claims. What you see here is a genuine and current description of SilentWind's architecture and security model.
+
+That said, public visibility is not the same as an open license.
+
+Certain implementation details, including specific cryptographic parameters, envelope schemas, database structures, internal API contracts, and operational configurations, are intentionally withheld from this repository. Their absence is deliberate, not an oversight, and is meant to protect both the security posture of the platform and the intellectual property behind it.
+
+Everything in this repository, including code that is fully visible, is proprietary and protected under copyright. Visibility is provided for transparency, technical review, and trust building. It is not an invitation to copy, fork for commercial use, or build a competing product from what is shown here. See the LICENSE file for the specific terms.
+
+If you are a security researcher, this openness is meant for you. Read the code, test the claims, and reach out if you find something. If you are interested in using this technology commercially or collaborating on it, reach out directly. Don't assume permission from the fact that the code is visible.
 
 ---
 
