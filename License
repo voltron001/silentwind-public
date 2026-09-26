@@ -1,0 +1,45 @@
+Copyright (c) 2026 Alex Arda Akyuz / CyberFX Secure. All rights reserved.
+
+This repository and its contents (including but not limited to source code,
+documentation, architecture diagrams, and design materials) are made
+available for viewing purposes only.
+
+No license, express or implied, is granted to any person to use, copy,
+modify, merge, publish, distribute, sublicense, or sell copies of this
+software or its documentation, in whole or in part, for any purpose.
+
+Viewing this repository does not grant permission to:
+
+  1. Use this code, or any substantial portion of it, in another project,
+     commercial or noncommercial.
+  2. Create derivative works based on this code or its architecture.
+  3. Redistribute this code or documentation in any form.
+  4. Use SilentWind's name, branding, or associated trademarks without
+     written permission.
+
+Transparency and Licensing Statement
+
+A Note on Transparency and Ownership
+
+This repository is public because I believe security products earn trust through openness, not through vague marketing claims. What you see here is a genuine and current description of SilentWind's architecture and security model.
+
+That said, public visibility is not the same as an open license.
+
+Certain implementation details, including specific cryptographic parameters, envelope schemas, database structures, internal API contracts, and operational configurations, are intentionally withheld from this repository. Their absence is deliberate, not an oversight, and is meant to protect both the security posture of the platform and the intellectual property behind it.
+
+Everything in this repository, including code that is fully visible, is proprietary and protected under copyright. Visibility is provided for transparency, technical review, and trust building. It is not an invitation to copy, fork for commercial use, or build a competing product from what is shown here. See the LICENSE file for the specific terms.
+
+If you are a security researcher, this openness is meant for you. Read the code, test the claims, and reach out if you find something. If you are interested in using this technology commercially or collaborating on it, reach out directly. Don't assume permission from the fact that the code is visible.
+
+All rights not expressly granted are reserved by the copyright holder.
+
+If you are interested in licensing this software, contributing to this
+project, or discussing a partnership, please reach out directly rather
+than assuming permission from the presence of this public repository.
+
+THIS SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.
